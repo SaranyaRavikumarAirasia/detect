@@ -1,2 +1,5 @@
+opencv-contrib-python==4.8.0.76
+opencv-python==4.8.0.76
+opencv-python-headless==4.8.1.78
 ultralytics==8.0.200
 streamlit==1.27.2
