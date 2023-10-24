@@ -1,4 +1,6 @@
-
+import sys
+sys.path.append('./ultralytics/yolo')
+from utils.checks import check_requirements
 from ultralytics import YOLO
 from pathlib import Path
 from PIL import Image
