@@ -11,7 +11,7 @@ modeltype=st.sidebar.radio("Select the task:",['Object Detection','Segmentation'
 confidence=float(st.sidebar.slider("Select the confidence Score:",25,100,40))/100
 #Select the Model
 if modeltype=='Object Detection':
-  modelpath=Path("content/yolov8n.pt")
+  modelpath=Path("yolov8n.pt")
 #load pretrained model
 model=YOLO(modelpath)
 # Design the Image Display part
