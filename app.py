@@ -1,11 +1,11 @@
 import sys
 sys.path.append('./ultralytics/yolo')
-from utils.checks import check_requirements
+#from utils.checks import check_requirements
 from ultralytics import YOLO
 from pathlib import Path
 from PIL import Image
 import streamlit as st
-import cv2
+#import cv2
 #Design the streamlit App
 
 st.title("Object detection and Image Segmentation using YOLOv8 in Python")
