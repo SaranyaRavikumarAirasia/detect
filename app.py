@@ -1,31 +1,77 @@
-
-from ultralytics import YOLO
+# Python In-built packages
 from pathlib import Path
-from PIL import Image
-import streamlit as st
-import cv2
-#Design the streamlit App
+import PIL
 
-st.title("Object detection and Image Segmentation using YOLOv8 in Python")
-modeltype=st.sidebar.radio("Select the task:",['Object Detection','Segmentation'])
-confidence=float(st.sidebar.slider("Select the confidence Score:",25,100,40))/100
-#Select the Model
-if modeltype=='Object Detection':
-  modelpath=Path("yolov8n.pt")
-#load pretrained model
-model=YOLO(modelpath)
-# Design the Image Display part
-st.sidebar.header("Image to be Detected")
-sourceimg=None
-sourceimg=st.sidebar.file_uploader("Choose an image...",type=("jpg","jpeg","png","webp","bmp"))
-col1,col2=st.columns(2)
+# External packages
+import streamlit as st
+
+# Local Modules
+import settings
+from ultralytics import YOLO
+import time
+import cv2
+import settings
+def load_model(model_path):
+    """
+    Loads a YOLO object detection model from the specified model_path.
+
+    Parameters:
+        model_path (str): The path to the YOLO model file.
+
+    Returns:
+        A YOLO object detection model.
+    """
+    model = YOLO(model_path)
+    return model
+# Main page heading
+st.title("Object Detection using YOLOv8")
+
+# Sidebar
+st.sidebar.header("ML Model Config")
+
+# Model Options
+model_type = st.sidebar.radio(
+    "Select Task", ['Detection', 'Segmentation'])
+
+confidence = float(st.sidebar.slider(
+    "Select Model Confidence", 25, 100, 40)) / 100
+
+# Selecting Detection Or Segmentation
+if model_type == 'Detection':
+    model_path = Path(settings.DETECTION_MODEL)
+elif model_type == 'Segmentation':
+    model_path = Path(settings.SEGMENTATION_MODEL)
+
+# Load Pre-trained ML Model
+try:
+    model = load_model(model_path)
+except Exception as ex:
+    st.error(f"Unable to load model. Check the specified path: {model_path}")
+    st.error(ex)
+
+st.sidebar.header("Image/Video Config")
+source_img = st.sidebar.file_uploader(
+        "Choose an image...", type=("jpg", "jpeg", "png", 'bmp', 'webp'))
+col1, col2 = st.columns(2)
 with col1:
-  if sourceimg is not None:
-    uploadedimg=Image.open(sourceimg)
-    st.image(sourceimg,caption="Uploaded image",use_column_width=True)
+    if source_img is not None:
+        uploaded_image = PIL.Image.open(source_img)
+        st.image(source_img, caption="Uploaded Image",
+                         use_column_width=True)
 with col2:
-  if st.sidebar.button("Detect Object"):
-    res=model.predict(uploadedimg,conf=confidence)
-    boxes=res[0].boxes
-    res_plotted=res[0].plot()[:,:,::-1]
-    st.image(res_plotted,caption="Detected Image",use_column_width=True)
+    if st.sidebar.button('Detect Objects'):
+        res = model.predict(uploaded_image,
+                                    conf=confidence
+                                    )
+        boxes = res[0].boxes
+        res_plotted = res[0].plot()[:, :, ::-1]
+        st.image(res_plotted, caption='Detected Image',
+                         use_column_width=True)
+        try:
+            with st.expander("Detection Results"):
+                for box in boxes:
+                    st.write(box.data)
+        except Exception as ex:
+            # st.write(ex)
+            st.write("No image is uploaded yet!")
+
